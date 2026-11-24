@@ -205,10 +205,10 @@ Supported assessment test queries verified by the query parser and discovery pip
 
 Token pricing reflects published standard API rates per 1M tokens. Latency numbers below are **estimated** per-call durations for the short JSON prompts used in this pipeline (~350–1,800 input tokens).
 
-| Criteria | Google Gemini (`gemini-2.5-flash`) | OpenAI (`gpt-4o-mini`) | OpenAI (`gpt-4.1-mini`) | Anthropic (`claude-haiku-4-5`) |
+| Criteria | Google Gemini (`gemini-3.8-flash`) | OpenAI (`gpt-4o-mini`) | OpenAI (`gpt-4.1-mini`) | Anthropic (`claude-haiku-4-5`) |
 |---|---|---|---|---|
 | **Provider** | Google AI / Vertex | OpenAI | OpenAI | Anthropic |
-| **Model Name** | `gemini-2.5-flash` | `gpt-4o-mini` | `gpt-4.1-mini` | `claude-haiku-4-5` |
+| **Model Name** | `gemini-3.8-flash` | `gpt-4o-mini` | `gpt-4.1-mini` | `claude-haiku-4-5` |
 | **API Cost (Input / Output per 1M)** | \$0.30 / \$2.50 (Free tier in AI Studio) | \$0.15 / \$0.60 | \$0.40 / \$1.60 | \$1.00 / \$5.00 |
 | **Response Speed (Est.)** | ~0.8s – 1.8s per step | ~1.1s – 2.3s per step | ~1.0s – 2.1s per step | ~1.0s – 2.0s per step |
 | **Accuracy (Intent & Entity Filtering)** | High; reliable geographic disambiguation & listicle rejection | Good; solid intent extraction, slightly looser entity cleanup | High; strong instruction following | High; higher output token cost |
@@ -218,7 +218,7 @@ Token pricing reflects published standard API rates per 1M tokens. Latency numbe
 
 ### B. Best Model Selection
 
-`gemini-2.5-flash` is recommended as the primary model with `gpt-4o-mini` as automatic fallback:
+`gemini-3.8-flash` is recommended as the primary model with `gpt-4o-mini` as automatic fallback:
 1. **Query Understanding**: Accurately separates audience persona, core interest, and implicit state/country hierarchy (e.g., mapping `Washington DC` -> `District of Columbia, USA` and distinguishing `individual` enthusiasts from `business` owners).
 2. **Prospect Relevance Filtering**: Effectively rejects SEO listicles (`"Top 15 Agencies..."`), job listings, and directory pages during candidate verification.
 3. **Speed**: Because multi-platform search I/O already takes ~2–4 seconds, sub-2-second LLM steps keep total endpoint latency responsive.
@@ -232,14 +232,14 @@ Token pricing reflects published standard API rates per 1M tokens. Latency numbe
 
 ### D. Final LLM Recommendation Summary
 
-- **Recommended Provider & Model**: Google Gemini — `gemini-2.5-flash`
+- **Recommended Provider & Model**: Google Gemini — `gemini-3.8-flash`
 - **Fallback Provider & Model**: OpenAI — `gpt-4o-mini`
 - **Estimated Token Usage per Uncached Discovery Request**:
   - Call 1 (Query Understanding): ~300 input tokens, ~110 output tokens
   - Call 2 (Batched Relevance Evaluation for ~15–25 candidates): ~1,850 input tokens, ~450 output tokens
   - **Total**: ~2,150 input tokens / ~560 output tokens
 - **Estimated API Cost per Discovery Request**:
-  - `gemini-2.5-flash` (paid tier): `(2,150 * $0.30 + 560 * $2.50) / 1,000,000` ≈ **\$0.00205 per request** (\$0.00 within AI Studio free tier)
+  - `gemini-3.8-flash` (paid tier): `(2,150 * $0.30 + 560 * $2.50) / 1,000,000` ≈ **\$0.00205 per request** (\$0.00 within AI Studio free tier)
   - `gpt-4o-mini` (fallback): `(2,150 * $0.15 + 560 * $0.60) / 1,000,000` ≈ **\$0.00066 per request**
 - **Expected End-to-End Response Time**: ~4.0s – 8.5s uncached (estimated across concurrent search + website contact enrichment + 2 LLM calls), **<10ms cached**.
 

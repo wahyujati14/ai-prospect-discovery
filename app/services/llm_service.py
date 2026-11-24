@@ -155,7 +155,7 @@ class LLMClient:
         return order
 
     async def _call_gemini(self, system_prompt: str, user_prompt: str) -> str:
-        model = self.settings.gemini_model.strip() or "gemini-2.5-flash"
+        model = self.settings.gemini_model.strip() or "gemini-3.8-flash"
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         body = {
             "system_instruction": {"parts": [{"text": system_prompt}]},
