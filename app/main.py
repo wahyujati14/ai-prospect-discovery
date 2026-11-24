@@ -31,6 +31,9 @@ def get_prospect_service(settings: Settings = Depends(get_settings)) -> Prospect
     global _discovery_service
     if _discovery_service is None:
         _discovery_service = ProspectDiscoveryService(settings=settings)
+    else:
+        _discovery_service.settings = settings
+        _discovery_service.llm.settings = settings
     return _discovery_service
 
 
@@ -65,8 +68,11 @@ async def root() -> dict[str, str]:
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok"}
+async def health(settings: Settings = Depends(get_settings)) -> dict[str, object]:
+    return {
+        "status": "ok",
+        "llm_configured": bool(settings.gemini_api_key or settings.openai_api_key),
+    }
 
 
 @app.post(
