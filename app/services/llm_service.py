@@ -155,8 +155,12 @@ class LLMClient:
         return order
 
     async def _call_gemini(self, system_prompt: str, user_prompt: str) -> str:
-        model = self.settings.gemini_model.strip() or "gemini-3.8-flash"
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        configured = self.settings.gemini_model.strip() or "gemini-flash-lite-latest"
+        candidate_models = list(
+            dict.fromkeys(
+                [configured, "gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
+            )
+        )
         body = {
             "system_instruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
@@ -165,24 +169,36 @@ class LLMClient:
                 "responseMimeType": "application/json",
             },
         }
-        data = await self._post_json(
-            url=url,
-            headers={
-                "Content-Type": "application/json",
-                "x-goog-api-key": self.settings.gemini_api_key.strip(),
-            },
-            body=body,
-        )
-        candidates = data.get("candidates") or []
-        if not candidates:
-            raise LLMServiceError("Gemini returned empty candidates.")
-        parts = candidates[0].get("content", {}).get("parts") or []
-        text = "".join(
-            str(p.get("text", "")) for p in parts if not p.get("thought")
-        ).strip()
-        if not text:
-            raise LLMServiceError("Gemini returned empty content.")
-        return text
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.settings.gemini_api_key.strip(),
+        }
+
+        last_err: Exception | None = None
+        for model in candidate_models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            try:
+                data = await self._post_json(
+                    url=url,
+                    headers=headers,
+                    body=body,
+                    max_attempts=1,
+                )
+                candidates = data.get("candidates") or []
+                if not candidates:
+                    raise LLMServiceError(f"Gemini model '{model}' returned empty candidates.")
+                parts = candidates[0].get("content", {}).get("parts") or []
+                text = "".join(
+                    str(p.get("text", "")) for p in parts if not p.get("thought")
+                ).strip()
+                if not text:
+                    raise LLMServiceError(f"Gemini model '{model}' returned empty content.")
+                return text
+            except Exception as exc:
+                logger.warning("Gemini model '%s' failed, trying fallback: %s", model, exc)
+                last_err = exc
+
+        raise LLMServiceError(f"All Gemini models failed: {last_err}")
 
     async def _call_openai(self, system_prompt: str, user_prompt: str) -> str:
         model = self.settings.openai_model.strip() or "gpt-4o-mini"
