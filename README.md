@@ -145,6 +145,18 @@ Supported assessment test queries verified by the query parser and discovery pip
 4. `Cricket lovers in Ahmedabad India`
 5. `Restaurant owners in Dubai UAE`
 
+### Verified Production Test Logs
+
+Measured against `https://ai-prospect-discovery.vercel.app/prospect-discovery`:
+
+```text
+[200 OK | 13.0s] "Football lovers in Washington DC in USA"        -> total_prospects=2  (e.g. Lois Cook, DC Spurs)
+[200 OK |  7.8s] "Digital marketing agency owners in New York USA" -> total_prospects=3  (e.g. Eric Lituchy, Gerard Boucher, Digital Drew)
+[200 OK | 13.8s] "Startup founders in London UK"                   -> total_prospects=3  (e.g. Build Your Network, CoffeeSpace, Founders.io)
+[200 OK |  7.3s] "Cricket lovers in Ahmedabad India"               -> total_prospects=13 (e.g. Som, Ahmedabad Cricket community, SUNRISING CRICKET ACADEMY)
+[200 OK |  8.9s] "Restaurant owners in Dubai UAE"                  -> total_prospects=6  (e.g. Rikas Group, Circle Restaurant LLC, Insha Amin)
+```
+
 ### Sample JSON Response Structure
 
 ```json
