@@ -2,6 +2,7 @@ import logging
 
 from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import Settings, get_settings
@@ -22,6 +23,13 @@ app = FastAPI(
     title="AI Multi-Platform Prospect Discovery API",
     description="Discovers, validates, and consolidates public prospect profiles and contact details across platforms.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 _discovery_service: ProspectDiscoveryService | None = None

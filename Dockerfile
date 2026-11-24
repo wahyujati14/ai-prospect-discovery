@@ -1,15 +1,20 @@
 FROM python:3.12-slim
 
-WORKDIR /srv/app
+RUN useradd -m -u 1000 appuser
+WORKDIR /home/appuser/app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/home/appuser \
+    PATH=/home/appuser/.local/bin:$PATH \
+    PORT=7860
 
-COPY requirements.txt .
+COPY --chown=appuser requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
+COPY --chown=appuser app ./app
 
-EXPOSE 4000
+USER appuser
+EXPOSE 7860
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-4000}"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860}"]
