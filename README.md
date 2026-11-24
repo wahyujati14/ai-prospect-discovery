@@ -6,9 +6,9 @@ FastAPI service that interprets natural-language prospect queries, searches publ
 
 | Item | URL |
 |---|---|
-| Live Service | `https://<your-deployed-domain>` |
-| Discovery Endpoint | `https://<your-deployed-domain>/prospect-discovery` |
-| Interactive Docs (Swagger) | `https://<your-deployed-domain>/docs` |
+| Live Service | `https://ai-prospect-discovery.vercel.app` |
+| Discovery Endpoint | `https://ai-prospect-discovery.vercel.app/prospect-discovery` |
+| Interactive Docs (Swagger) | `https://ai-prospect-discovery.vercel.app/docs` |
 
 ## Supported Platforms & Discovery Sources
 
